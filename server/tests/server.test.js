@@ -4,14 +4,23 @@ const superTest = require('supertest');
 const { app } = require('../server');
 const { Todo } = require('../models/todo');
 
+const todos = [
+    {
+        text: 'test todo 1'
+    },
+    {
+        text: 'test todo 2'
+    }
+];
+
 beforeEach((done) => {    //gets called before each test case - clears the database
 
     Todo.remove({}).then(
         () => {
+            return Todo.insertMany(todos);
 
-            done();
         }
-    );
+    ).then(() => done());
 
 });
 
@@ -35,7 +44,7 @@ describe('POST/todos', () => {
                     return done(err);   //check and return if any error
                 }
 
-                Todo.find().then(   //executes when post succeeds
+                Todo.find({text}).then(   //executes when post succeeds
                     (todos) => {
                         expect(todos.length).toBe(1);   //check if todos length is 1 (if todos is empty)
                         expect(todos[0].text).toBe(text);  //check if the text present is same as test text
@@ -68,7 +77,7 @@ describe('POST/todos', () => {
                 Todo.find().then(
 
                     (todos) => {
-                        expect(todos.length).toBe(0);
+                        expect(todos.length).toBe(2);
                         done();
                     }
 
@@ -80,5 +89,21 @@ describe('POST/todos', () => {
 
     });
 
+
+});
+
+describe('GET/todos',()=>{
+
+    it('should get all todos',(done)=>{
+
+        superTest(app)
+            .get('/todos')
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todos.length).toBe(2);
+            })
+            .end(done);
+
+    });
 
 });
