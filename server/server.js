@@ -13,6 +13,12 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json()); //using the return value of bodyParser.json() as middleware
 
+app.get('/',(req,res)=>{
+
+    res.send('Node API for CRUD operations on Mongoose DB!')
+
+})
+
 app.post('/todos', (req, res) => {
 
     var todo = new Todo({
