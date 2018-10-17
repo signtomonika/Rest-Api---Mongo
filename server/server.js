@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');  //sends JSON to browser
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
 
+
+var viewPath = __dirname + '/public/';
+
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
 var { User } = require('./models/user');
@@ -15,7 +18,7 @@ app.use(bodyParser.json()); //using the return value of bodyParser.json() as mid
 
 app.get('/',(req,res)=>{
 
-    res.send('Node API for CRUD operations on Mongoose DB!')
+    res.sendFile(viewPath + "home.html");
 
 })
 
