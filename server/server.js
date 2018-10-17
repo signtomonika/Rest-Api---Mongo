@@ -1,6 +1,7 @@
-var express = require('express');
-var bodyParser = require('body-parser');  //sends JSON to browser
+const express = require('express');
+const bodyParser = require('body-parser');  //sends JSON to browser
 const { ObjectID } = require('mongodb');
+const _ = require('lodash');
 
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
@@ -54,7 +55,7 @@ app.get('/todos/:id', (req, res) => {
         Todo.findById(id).then(
             (todo) => {
                 if (todo) {
-                    res.send({todo});  //sending as JSON and not an array
+                    res.send({ todo });  //sending as JSON and not an array
                 } else {
                     res.status(404).send({ "err": "No todo found" });
                 }
@@ -68,7 +69,7 @@ app.get('/todos/:id', (req, res) => {
 
 });
 
-app.delete('/todos/:id',(req,res)=>{
+app.delete('/todos/:id', (req, res) => {
 
     var id = req.params.id;
 
@@ -81,7 +82,7 @@ app.delete('/todos/:id',(req,res)=>{
         Todo.findByIdAndRemove(id).then(
             (todo) => {
                 if (todo) {
-                    res.status(200).send({todo});  //sending as JSON and not an array
+                    res.status(200).send({ todo });  //sending as JSON and not an array
                 } else {
                     res.status(404).send({ "err": "No todo found" });
                 }
@@ -96,9 +97,57 @@ app.delete('/todos/:id',(req,res)=>{
 
 });
 
+app.patch('/todos/:id', (req, res) => {
+
+    var id = req.params.id;
+
+    //control user to update only text and completedAt field
+
+    var body = _.pick(req.body, ['text', 'completed']) //pick(<Object>,[<array of properties to extract from the object>])
+
+    if (!ObjectID.isValid(id)) {
+
+        res.status(400).send({ "err": "Invalid ID format" });
+
+    } else {
+
+        //check if user selects to update CompletedAt field
+
+        if (_.isBoolean(body.completed) && body.completed) {    //enable user to decide whether to update the completedAt field
+
+            body.completedAt = new Date().getTime();
+
+        } else {
+
+            body.completed = false;
+            body.completedAt = null;
+
+        }
+
+        //update by ID
+
+        Todo.findByIdAndUpdate(id, { $set: body }, { new: true })   //set gets key value pairs that will be updated. body is defined above; new will return the updated object
+            .then((todo) => {
+
+                if (!todo) {
+                    res.status(404).send();
+                } else {
+
+                    res.send({ todo });
+                }
+
+            }).catch((err) => {
+                res.status(400).send();
+            })
+
+    }
+
+
+});
+
 app.listen(port, () => {
     console.log(`Server started at port ${port}..`);
 });
 
 
-module.exports = {app};
+module.exports = { app };
