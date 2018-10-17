@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MongoDB API</title>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: left;
+            text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+            color: rgb(66, 69, 86);
+            font-weight: 100;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div>
+        <div>
+
+            <!-- Navigation Bar-->
+
+            <nav class="navbar navbar-inverse" role="navigation" style="padding-left:10px;">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
+                    <li><a style="font: bold;" href="https://github.com/signtomonika/Rest-Api-Mongo" onclick="location.href='/';"
+                            target="_blank">
+                            GitHub
+                        </a></li>
+                </ul>
+            </nav>
+        </div>
+        <br />
+        <div style="padding-left:50px">
+
+            <h1>API</h1>
+
+            <!-- API 1 : Get Todos -->
+
+            <h3>READ :  /todos/</h3>
+
+            <h5>returns all the documents from the collection 'Todos'</h5>
+
+            <h6><u>JSON Structure</u></h6>
+
+            <code style="display:block;white-space:pre-wrap">
+                {
+                    "completed": Boolean,
+                    "completedAt": Timestamp created / updated,
+                    "_id": Document ID,
+                    "text": Todo Text,
+                    "__v": Version key
+                }
+            </code>
+
+            <!-- API 2 : get Todo by ID -->
+
+            <h3>READ :  /todos/:id</h3>
+
+            <h5>returns document by Collection ID </h5>
+
+            <h6><u>JSON Structure</u></h6>
+
+            <code style="display:block;white-space:pre-wrap">
+                        {
+                            "completed": Boolean,
+                            "completedAt": Timestamp created / updated,
+                            "_id": Document ID,
+                            "text": Todo Text,
+                            "__v": Version key
+                        }
+            </code>
+
+            <!-- API 3 : Insert Todo -->
+
+            <h3>INSERT :  /todos</h3>
+
+            <h5>Inserts Todo in Database - Use Postman</h5>
+
+            <h6><u>JSON Structure - In Request Body</u></h6>
+
+            <code style="display:block;white-space:pre-wrap">
+                {
+                    "text":"Todo from Postman"
+                }
+            </code>
+
+            <!-- API 2 : Update Todo by ID -->
+
+            <h3>PATCH :  /todos/:id</h3>
+
+            <h5>Updates Todo in Database By ID - Use Postman</h5>
+
+            <h6><u>JSON Structure - In Request Body</u></h6>
+
+            <code style="display:block;white-space:pre-wrap">
+                {
+                    "completed" : true,
+                    "text": "Todo Updated from Postman"
+                }
+            </code>
+
+            <!-- API 2 : Delete Todo by ID -->
+
+            <h3>DELETE :  /todos/:id</h3>
+
+            <h5>Deletes Todo in Database By ID - Use Postman</h5>
+
+            
+        </div>
+
+    </div>
+</body>
+
+</html>
