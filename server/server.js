@@ -7,6 +7,8 @@ var favicon = require('serve-favicon');
 var path = require('path');
 var viewPath = __dirname + '/public/';
 
+console.log(viewPath);
+
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
 var { User } = require('./models/user');
