@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');  //sends JSON to browser
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
 
-
+var favicon = require('serve-favicon');
+var path = require('path');
 var viewPath = __dirname + '/public/';
 
 var { mongoose } = require('./db/mongoose');
@@ -15,6 +16,8 @@ var app = express();
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json()); //using the return value of bodyParser.json() as middleware
+
+app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 
 app.get('/',(req,res)=>{
 
