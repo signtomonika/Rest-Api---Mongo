@@ -4,10 +4,11 @@ mongoose.Promise = global.Promise;  //config mongoose to use the Promises in nod
 
 //mongoose.connect(process.env.MONGODB_URI);  //herokumongolab addon lives in the process.env
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/TodoApp');
+mongoose.connect(process.env.MONGODB_URI);
 
 module.exports = {
 
     mongoose
 
 };
+

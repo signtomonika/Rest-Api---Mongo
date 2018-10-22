@@ -1,9 +1,12 @@
+require('./config/config');
+
 const express = require('express');
 const bodyParser = require('body-parser');  //sends JSON to browser
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
-const hbs = require('hbs');
 
+// View 
+const hbs = require('hbs');
 var favicon = require('serve-favicon');
 var path = require('path');
 
@@ -24,6 +27,8 @@ app.use(bodyParser.json()); //using the return value of bodyParser.json() as mid
 //app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 
 app.get('/',(req,res)=>{
 
