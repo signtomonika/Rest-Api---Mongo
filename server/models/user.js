@@ -49,12 +49,13 @@ userSchema.methods.generateAuthToken = function () {
 
     var user = this; //access to individual document
     //need access value and token value to create user.tokens property
-    var accessVal = 'auth';
-    var token = jwt.sign({ _id: user._id.toHexString(), access: accessVal }, 'abc123').toString();
+    var access = 'auth';
+    var token = jwt.sign({ _id: user._id.toHexString(), access }, 'abc123').toString();
+    
     //creating token
-    user.tokens = user.tokens.concat([{ accessVal, token }]); //tokens is empty[] by default -> value assigned in user model
+    user.tokens = user.tokens.concat([{ access, token }]); //tokens is empty[] by default -> value assigned in user model
 
-   return user.save().then( //saving user model to server
+    return user.save().then( //saving user model to server
 
         () => { return token; }
 
@@ -70,6 +71,43 @@ userSchema.methods.toJSON = function () { //defines what is sent back when mongo
     var userObject = user.toObject();
 
     return _.pick(userObject, ['_id', 'email']);
+
+};
+
+//adding MODEL METHOD => executable on Schema Users
+
+userSchema.statics.findByToken = function (token) {
+
+    var User = this; //entire collection
+
+    var decoded;
+
+    try {
+
+        decoded = jwt.verify(token, 'abc123');
+
+       
+    } catch (err) {
+
+        // return new Promise((resolve, reject) => {
+
+        //     reject(err); //findOne will not be triggered if error
+
+        // });
+
+        //same as above
+
+        return Promise.reject(err);
+
+    }
+
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    });
+
 
 };
 
