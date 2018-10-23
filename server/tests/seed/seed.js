@@ -8,33 +8,6 @@ const jwt = require('jsonwebtoken');
 //Dummy Data for Testing
 /***********************************************************/
 
-/********** TODOS ***************/
-
-const todos = [
-    {
-        _id: new ObjectID(),
-        text: 'test todo 1'
-    },
-    {
-        _id: new ObjectID(),
-        text: 'test todo 2',
-        completed: true,
-        completedAt: 333
-    }
-];
-
-
-const populateTodos = (done)=>{
-
-    Todo.remove({}).then(  //removing existing data before insert
-        () => {
-            return Todo.insertMany(todos);
-
-        }
-    ).then(() => done());
-
-
-};
 
 /********** USERS ***************/
 
@@ -55,7 +28,11 @@ const users = [
     {
         _id: userTwoId,
         email: 'lun@panda.com',
-        password: 'userTwoPass'
+        password: 'userTwoPass',
+        tokens:[{
+            access: 'auth',
+            token: jwt.sign({_id: userTwoId, access: 'auth'}, 'abc123').toString()
+        } ]
     }
 
 ];
@@ -70,6 +47,36 @@ const populateUsers = (done)=>{
        return Promise.all([userOne,userTwo]);   //promise.all takes an array of promises and resolves after all the added promises are finished
 
     }).then(()=> done());
+
+};
+
+/********** TODOS ***************/
+
+const todos = [
+    {
+        _id: new ObjectID(),
+        text: 'test todo 1',
+        _creator: userOneId
+    },
+    {
+        _id: new ObjectID(),
+        text: 'test todo 2',
+        completed: true,
+        completedAt: 333,
+        _creator: userTwoId
+    }
+];
+
+
+const populateTodos = (done)=>{
+
+    Todo.remove({}).then(  //removing existing data before insert
+        () => {
+            return Todo.insertMany(todos);
+
+        }
+    ).then(() => done());
+
 
 };
 
