@@ -129,6 +129,46 @@ userSchema.statics.findByToken = function (token) {
 };
 
 /***********************************************************/
+//Find User by Credntials
+/***********************************************************/
+
+//adding MODEL METHOD => executable on Schema Users
+
+userSchema.statics.findByCredentials = function (email, password) {
+
+    var User = this;
+
+    return User.findOne({ email }).then(
+        (user) => {
+
+            if (!user) {
+                return Promise.reject();
+            }
+
+            return new Promise(
+                (resolve, reject) => {
+
+                    bcrypt.compare(password, user.password, (err, result) => {
+
+                        if (result) {
+
+                            resolve(user);
+                        } else {
+
+                            reject();
+                        }
+
+                    });
+
+                });
+
+        });
+
+
+};
+
+
+/***********************************************************/
 //Save Hashed Password instead of plain text password
 /***********************************************************/
 
@@ -138,24 +178,24 @@ userSchema.pre('save', function (next) {
 
     var user = this;
 
-if(user.isModified('password')){  //isModified returns true if password is modified
+    if (user.isModified('password')) {  //isModified returns true if password is modified
 
-    bcrypt.genSalt(10,(err,salt)=>{
+        bcrypt.genSalt(10, (err, salt) => {
 
-        bcrypt.hash(user.password,salt,(err,hash)=>{
+            bcrypt.hash(user.password, salt, (err, hash) => {
 
-            user.password = hash;  //hashed password gets saved instead of plain text
-            next();
+                user.password = hash;  //hashed password gets saved instead of plain text
+                next();
+
+            });
 
         });
 
-    });
 
+    } else {
 
-}else {
-
-    next();
-}
+        next();
+    }
 
 });
 

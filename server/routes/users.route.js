@@ -55,4 +55,29 @@ module.exports = (app) => {
 
     });
 
+
+    /**************************/
+    //User Login 
+    /**************************/
+
+    app.post('/users/login', (req, res) => {
+
+        var body = _.pick(req.body, ['email', 'password']);
+
+        User.findByCredentials(body.email, body.password)
+            .then((user) => {
+
+                return user.generateAuthToken().then((token)=>{
+                    res.header('x-auth', token).send(user);  //saving refreshed token
+                });
+
+            }).catch((err) => {
+
+                res.status(400).send();
+
+            });
+
+    });
+
+
 }
