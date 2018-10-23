@@ -4,6 +4,10 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+/************/
+//Schema
+/************/
+
 var userSchema = new mongoose.Schema({ //schema allows defining a model structure
     email: {
         type: String,
@@ -42,6 +46,10 @@ var userSchema = new mongoose.Schema({ //schema allows defining a model structur
     }]
 });
 
+/***********************************************************/
+//Generate AuthToken
+/***********************************************************/
+
 //adding INSTANCE METHODS => executable on each document in a collection
 
 //defining traditional function and not arrow functions ; arrow functions doesn't bind with "this" keyword -> stores current doc
@@ -63,6 +71,10 @@ userSchema.methods.generateAuthToken = function () {
     );
 };
 
+/***********************************************************/
+//Defining JSON output
+/***********************************************************/
+
 //Overriding method to retrieve only selected values
 
 userSchema.methods.toJSON = function () { //defines what is sent back when mongoose model is converted to json
@@ -74,6 +86,10 @@ userSchema.methods.toJSON = function () { //defines what is sent back when mongo
     return _.pick(userObject, ['_id', 'email']);
 
 };
+
+/***********************************************************/
+//Find User by AuthToken
+/***********************************************************/
 
 //adding MODEL METHOD => executable on Schema Users
 
@@ -112,6 +128,10 @@ userSchema.statics.findByToken = function (token) {
 
 };
 
+/***********************************************************/
+//Save Hashed Password instead of plain text password
+/***********************************************************/
+
 //Middleware to run before save -> ensure hashed password is saved in DB
 
 userSchema.pre('save', function (next) {
@@ -138,6 +158,10 @@ if(user.isModified('password')){  //isModified returns true if password is modif
 }
 
 });
+
+/***********************************************************/
+//Exporting User Model
+/***********************************************************/
 
 var User = mongoose.model('User', userSchema);
 
