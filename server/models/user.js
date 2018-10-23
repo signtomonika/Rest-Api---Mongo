@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 var userSchema = new mongoose.Schema({ //schema allows defining a model structure
     email: {
@@ -51,7 +52,7 @@ userSchema.methods.generateAuthToken = function () {
     //need access value and token value to create user.tokens property
     var access = 'auth';
     var token = jwt.sign({ _id: user._id.toHexString(), access }, 'abc123').toString();
-    
+
     //creating token
     user.tokens = user.tokens.concat([{ access, token }]); //tokens is empty[] by default -> value assigned in user model
 
@@ -86,7 +87,7 @@ userSchema.statics.findByToken = function (token) {
 
         decoded = jwt.verify(token, 'abc123');
 
-       
+
     } catch (err) {
 
         // return new Promise((resolve, reject) => {
@@ -110,6 +111,33 @@ userSchema.statics.findByToken = function (token) {
 
 
 };
+
+//Middleware to run before save -> ensure hashed password is saved in DB
+
+userSchema.pre('save', function (next) {
+
+    var user = this;
+
+if(user.isModified('password')){  //isModified returns true if password is modified
+
+    bcrypt.genSalt(10,(err,salt)=>{
+
+        bcrypt.hash(user.password,salt,(err,hash)=>{
+
+            user.password = hash;  //hashed password gets saved instead of plain text
+            next();
+
+        });
+
+    });
+
+
+}else {
+
+    next();
+}
+
+});
 
 var User = mongoose.model('User', userSchema);
 
