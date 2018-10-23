@@ -79,5 +79,20 @@ module.exports = (app) => {
 
     });
 
+    
+    /**************************/
+    //User Logout 
+    /**************************/
+
+    app.delete('/users/me/token',authenticate, (req,res)=>{
+
+        req.user.removeToken(req.token).then(()=>{  //authenticate gets token and returns user and its token 
+            res.status(200).send()
+        },()=>{
+            res.status(400).send();
+        })
+
+    });
+
 
 }

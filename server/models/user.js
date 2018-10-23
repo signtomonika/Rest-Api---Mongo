@@ -167,6 +167,25 @@ userSchema.statics.findByCredentials = function (email, password) {
 
 };
 
+/***********************************************************/
+//Delete User by Token
+/***********************************************************/
+
+userSchema.methods.removeToken = function (tokenArg){
+
+    var user = this;
+
+    return user.update({
+
+        $pull:{   //pull removes Tokens object (array) with matching criteria from the collection
+            tokens: {
+                token : tokenArg
+            }
+        }
+
+    });
+
+};
 
 /***********************************************************/
 //Save Hashed Password instead of plain text password
