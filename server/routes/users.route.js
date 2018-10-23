@@ -43,6 +43,22 @@ module.exports = (app) => {
 
     });
 
+    /**************************/
+    //get all Users - For checking 
+    /**************************/
+
+    app.get('/users',(req,res)=>{
+
+        User.find().then(
+            (users) => {
+                
+                res.send({ users });
+            }, (err) => {
+                
+                res.status(400).send(err);
+            }
+        )
+    });
 
 
     /**************************/
