@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+
 /************/
 //Schema
 /************/
@@ -59,7 +60,7 @@ userSchema.methods.generateAuthToken = function () {
     var user = this; //access to individual document
     //need access value and token value to create user.tokens property
     var access = 'auth';
-    var token = jwt.sign({ _id: user._id.toHexString(), access }, 'abc123').toString();
+    var token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.JWT_SEC).toString();
 
     //creating token
     user.tokens = user.tokens.concat([{ access, token }]); //tokens is empty[] by default -> value assigned in user model
@@ -101,7 +102,7 @@ userSchema.statics.findByToken = function (token) {
 
     try {
 
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SEC);
 
 
     } catch (err) {
