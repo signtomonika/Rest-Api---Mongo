@@ -13,19 +13,17 @@ module.exports = (app) => {
     //Insert New User
     /***************/
 
-    app.post('/users', (req, res) => {
+    app.post('/users', async (req, res) => {
 
-        var body = _.pick(req.body, ['email', 'password']);
+        try {
 
-        var user = new User(body);
+            const body = _.pick(req.body, ['email', 'password']);
 
-        user.save().then(    //saving the model to DB //user.tokens will be an empty array ; it is updated after user saved in server
-            () => {
+            const user = new User(body);
 
-                return user.generateAuthToken();  //returns token
+            await user.save();
 
-            }
-        ).then((token) => {
+            const token = await user.generateAuthToken();
 
             //send the token back as http response header -> final goal
             //header takes 2 arguments -> key value pair -> <header name>, <value of header>
@@ -35,11 +33,9 @@ module.exports = (app) => {
             res.header('x-auth', token).send(user);
 
 
-        }
-
-        ).catch((err) => {
+        } catch (err) {
             res.status(400).send(err);
-        });
+        }
 
     });
 
@@ -47,14 +43,14 @@ module.exports = (app) => {
     //get all Users - For checking 
     /**************************/
 
-    app.get('/users',(req,res)=>{
+    app.get('/users', (req, res) => {
 
         User.find().then(
             (users) => {
-                
+
                 res.send({ users });
             }, (err) => {
-                
+
                 res.status(400).send(err);
             }
         )
@@ -76,39 +72,42 @@ module.exports = (app) => {
     //User Login 
     /**************************/
 
-    app.post('/users/login', (req, res) => {
+    app.post('/users/login', async (req, res) => {
 
-        var body = _.pick(req.body, ['email', 'password']);
+        try {
 
-        User.findByCredentials(body.email, body.password)
-            .then((user) => {
+            const body = _.pick(req.body, ['email', 'password']);
 
-                return user.generateAuthToken().then((token)=>{
-                    res.header('x-auth', token).send(user);  //saving refreshed token
-                });
+            const user = await User.findByCredentials(body.email, body.password);
 
-            }).catch((err) => {
+            const token = await user.generateAuthToken();
 
-                res.status(400).send();
+            res.header('x-auth', token).send(user); //saving refreshed token
 
-            });
+        } catch (err) {
+            res.status(400).send();
+        }
+
 
     });
 
-    
+
     /**************************/
     //User Logout 
     /**************************/
 
-    app.delete('/users/me/token',authenticate, (req,res)=>{
+    app.delete('/users/me/token', authenticate, async (req, res) => {   //authenticate gets token and returns user and its token 
 
-        req.user.removeToken(req.token).then(()=>{  //authenticate gets token and returns user and its token 
-            res.status(200).send()
-        },()=>{
+
+        try {
+            await req.user.removeToken(req.token);
+            res.status(200).send();
+
+        } catch (err) {
             res.status(400).send();
-        })
+        }
+
 
     });
-
 
 }

@@ -86,7 +86,7 @@ module.exports = (app) => {
     //Delete todo by ID
     /***************/
 
-    app.delete('/todos/:id', authenticate , (req, res) => {
+    app.delete('/todos/:id', authenticate, async (req, res) => {
 
         var id = req.params.id;
 
@@ -96,22 +96,26 @@ module.exports = (app) => {
 
         } else {
 
-            Todo.findOneAndRemove({
-                _id: id,
-                _creator: req.user._id
-            }).then(
-                (todo) => {
-                    if (todo) {
-                        res.status(200).send({ todo });  //sending as JSON and not an array
-                    } else {
-                        res.status(404).send({ "err": "No todo found" });
-                    }
+            try {
+
+                const todo = await Todo.findOneAndRemove({
+                    _id: id,
+                    _creator: req.user._id
+                });
+
+                if (todo) {
+                    res.status(200).send({ todo });  //sending as JSON and not an array
+                } else {
+                    res.status(404).send({ "err": "No todo found" });
                 }
-            ).catch(
-                (err) => {
-                    res.status(400).send();
-                }
-            )
+
+
+            } catch (err) {
+
+                res.status(400).send();
+
+            }
+
         }
 
 
@@ -121,7 +125,7 @@ module.exports = (app) => {
     //Update or Patch todo by ID
     /***************************/
 
-    app.patch('/todos/:id', authenticate ,(req, res) => {
+    app.patch('/todos/:id', authenticate, (req, res) => {
 
         var id = req.params.id;
 
@@ -151,8 +155,9 @@ module.exports = (app) => {
             //update by ID
 
             Todo.findOneAndUpdate({
-                _id : id,
-                _creator: req.user._id}, { $set: body }, { new: true })   //set gets key value pairs that will be updated. body is defined above; new will return the updated object
+                _id: id,
+                _creator: req.user._id
+            }, { $set: body }, { new: true })   //set gets key value pairs that will be updated. body is defined above; new will return the updated object
                 .then((todo) => {
 
                     if (!todo) {
